@@ -1,0 +1,4 @@
+node_modules/
+*checkpoint.ipynb
+user_data/
+.Rproj.user
