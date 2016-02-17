@@ -30,8 +30,6 @@ opts_chunk$set(fig.height = 6, fig.width = 10, dpi = 300)
 
 ```{r readdata}
 raw_repo_data <- read_csv("../output/pushed-at-2016.csv")
-# get rid of extra pandas NA column that wrecks havoc on dplyr
-raw_repo_data[, 1] <- NULL
 ```
 
 ```{r}
