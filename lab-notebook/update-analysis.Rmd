@@ -1,0 +1,79 @@
+---
+title: "Recommendation with Languages"
+author: "Devin Pastoor"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r normalize_path, include=F, eval=F}
+# FOR INTERACTIVE USE
+# set this so can normalize wd from Rstudio project and when knitting
+# eg if your rmd is in /lab-notebook/<notebook>.Rmd
+# it should look like setwd(paste0(getwd(), "/lab-notebook/"))
+setwd(paste0(getwd(), "/lab-notebook/"))
+```
+
+```{r libraries, warning=FALSE, message=FALSE}
+# required libraries
+library("PKPDmisc")
+library("knitr")
+library("readr")
+library("dplyr")
+library("tidyr")
+library("lubridate")
+library("ggplot2")
+```
+
+```{r globalsettings}
+opts_chunk$set(fig.height = 6, fig.width = 10, dpi = 300)
+```
+
+```{r readdata}
+raw_repo_data <- read_csv("../output/pushed-at-2016.csv")
+# get rid of extra pandas NA column that wrecks havoc on dplyr
+raw_repo_data[, 1] <- NULL
+```
+
+```{r}
+# where to start analysis
+repo_data <- raw_repo_data %>% mutate(
+  language = factor(language),
+  name = factor(name),
+  owner = factor(owner),
+  full_name = factor(full_name)
+)
+```
+
+```{r}
+repo_data <- repo_data %>% mutate(
+  created_at_day = ceiling_date(created_at, "day"),
+  pushed_at_day = ceiling_date(pushed_at, "day"),
+  updated_at_day = ceiling_date(updated_at, "day")
+) 
+```
+
+```{r}
+repo_data %>%
+  ggplot(aes(x = created_at_day)) + 
+  geom_histogram(bins = 50)
+```
+
+```{r}
+repo_data %>%
+  ggplot(aes(x = pushed_at_day)) + 
+  geom_histogram(bins = n_distinct(repo_data$pushed_at_day),
+                 color = "black", fill = "white") + 
+  theme_bw() + 
+  base_theme()
+```
+
+```{r}
+repo_data %>%
+  filter(updated_at_day > ymd('2015-11-01')) %>%
+  ggplot(aes(x = updated_at_day)) + 
+  geom_histogram(bins = n_distinct(repo_data$updated_at_day))
+```
+
+```{r}
+devtools::session_info()
+```
