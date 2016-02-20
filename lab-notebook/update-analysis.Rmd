@@ -5,6 +5,8 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
+## Setup
+
 ```{r normalize_path, include=F, eval=F}
 # FOR INTERACTIVE USE
 # set this so can normalize wd from Rstudio project and when knitting
@@ -28,9 +30,13 @@ library("ggplot2")
 opts_chunk$set(fig.height = 6, fig.width = 10, dpi = 300)
 ```
 
+## IO
+
 ```{r readdata}
 raw_repo_data <- read_csv("../output/pushed-at-2016.csv")
 ```
+
+## Cleaning
 
 ```{r}
 # where to start analysis
@@ -49,6 +55,8 @@ repo_data <- repo_data %>% mutate(
   updated_at_day = ceiling_date(updated_at, "day")
 ) 
 ```
+
+## Repository Updates
 
 ```{r}
 repo_data %>%
@@ -70,6 +78,16 @@ repo_data %>%
   filter(updated_at_day > ymd('2015-11-01')) %>%
   ggplot(aes(x = updated_at_day)) + 
   geom_histogram(bins = n_distinct(repo_data$updated_at_day))
+```
+
+
+## Star counts
+
+```{r}
+repo_data %>%
+  group_by(language) %>% tally %>% 
+  arrange(desc(n)) %>% head(n = 20) %>%
+  kable
 ```
 
 ```{r}
